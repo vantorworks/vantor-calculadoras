@@ -5,9 +5,9 @@
 <div id="app" class="shell hidden"><header class="top"><div><div class="brand">VANTOR <span style="font-weight:400">| Gestão</span></div><div class="sub">Gestão de impressão 3D e marketplaces</div></div><div><span class="pill" id="userEmail"></span> <button id="logout">Sair</button></div></header><nav class="nav" id="nav"><button data-page="painel" class="active">Painel</button><button data-page="produtos">Produtos</button><button data-page="vendas">Vendas</button><button data-page="materiais">Materiais</button><button data-page="producoes">Produção</button><button data-page="financeiro">Financeiro</button><a href="./index.html" class="link" style="align-self:center;margin-left:8px">Calculadoras ↗</a></nav><div id="message" class="notice hidden" role="status"></div><main id="content"></main><p class="footer">VANTOR Gestão • versão inicial de testes • dados sincronizados no Supabase • sem importação histórica nesta etapa</p></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script>
 'use strict';
-const URL='https://nzjcclcklbukcgkoyrhu.supabase.co';
+const SUPABASE_URL='https://nzjcclcklbukcgkoyrhu.supabase.co';
 const KEY='sb_publishable_Mtu7ZSz5qkZlzbI2HaRXtg_yEQdQvlt';
-const client=window.supabase?.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const client=window.supabase?.createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const $=id=>document.getElementById(id);const esc=x=>String(x??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');const brl=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});const today=()=>new Date().toLocaleDateString('en-CA');let page='painel',records=[],editing=null,refs={};
 const configs={
  produtos:{title:'Produtos',fields:[['nome','Nome','text',true],['sku','SKU','text'],['descricao','Descrição','text'],['custo_estimado','Custo estimado (R$)','number'],['preco_base','Preço base (R$)','number']],columns:['nome','sku','custo_estimado','preco_base']},
