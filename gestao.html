@@ -51,7 +51,7 @@ async function dashboard(){
  for(const sale of oldSales){const k=String(sale.data_venda||'').slice(0,7);if(!/^\d{4}-\d{2}$/.test(k))continue;const x=months.get(k)||{month:k,gross:0,profit:0,comNota:0,semNota:0,conferir:0};const v=Number(sale.valor_bruto||0);x.gross+=v;if(sale.nota_fiscal_status==='emitida')x.comNota+=v;else if(sale.nota_fiscal_status==='nao_emitida')x.semNota+=v;else x.conferir+=v;const match=String(sale.observacoes||'').match(/\| lucro histórico: ([\d.,-]+)/);if(match)x.profit+=Number(match[1]);months.set(k,x);}
   for(const sale of tcgSales){const k=String(sale.data_movimento||'').slice(0,7);if(!/^\d{4}-\d{2}$/.test(k))continue;const x=months.get(k)||{month:k,gross:0,profit:0,comNota:0,semNota:0,conferir:0};const v=Number(sale.valor_bruto||0);x.gross+=v;x.profit+=v-Number(sale.taxa_valor||0)-Number(sale.custo_total||0);if(sale.nota_fiscal_status==='emitida')x.comNota+=v;else if(sale.nota_fiscal_status==='nao_emitida')x.semNota+=v;else x.conferir+=v;months.set(k,x);}
  const monthly=[...months.values()].sort((a,b)=>a.month.localeCompare(b.month)).slice(-6);const max=Math.max(1,...monthly.map(x=>x.gross));
- const metric=(label,value,detail='')=>'<div class="metric"><small>'+esc(label)+'</small><strong>'+esc(value)+'</strong>'+(detail?'<div class="muted" style="font-size:12px;margin-top:5px">'+esc(detail)+'</div>':'')+'</div>';
+
  const monthName=k=>{const [y,m]=k.split('-');return m+'/'+y;};
  const chart=monthly.length?'<div class="dash-chart">'+monthly.map(x=>'<div class="dash-month"><div class="dash-bararea"><div class="dash-bar" style="height:'+Math.max(2,x.gross/max*100).toFixed(2)+'%" title="'+esc(brl(x.gross))+'"></div></div><b>'+esc(monthName(x.month))+'</b><small>'+esc(brl(x.gross))+'</small><small>Com NF: '+esc(brl(x.comNota))+'</small><small>Sem NF: '+esc(brl(x.semNota))+'</small><small>A conferir: '+esc(brl(x.conferir))+'</small><small>Lucro: '+esc(brl(x.profit))+'</small></div>').join('')+'</div>':'<p class="muted">Ainda não existem vendas para exibir o gráfico.</p>';
  const machineHours=id=>prints.filter(x=>x.maquina_vantor_id===id&&x.status==='concluida'&&x.contabilizar_horas).reduce((a,x)=>a+Number(x.tempo_minutos||0)/60,0)+attempts.filter(x=>x.maquina_vantor_id===id).reduce((a,x)=>a+Number(x.tempo_minutos||0)/60,0);
@@ -193,6 +193,7 @@ async function ordersPage(){
 
 const moneyNumber=x=>Number(x||0);
 const tcgFormField=(label,name,type='text',extra='')=>'<label>'+label+'<input name="'+name+'" type="'+type+'" '+extra+' required></label>';
+ const metric=(label,value,detail='')=>'<div class="metric"><small>'+esc(label)+'</small><strong>'+esc(value)+'</strong>'+(detail?'<div class="muted" style="font-size:12px;margin-top:5px">'+esc(detail)+'</div>':'')+'</div>';
 async function tcgPage(){
  const names=['tcg_produtos_vantor','tcg_lotes_vantor','tcg_movimentacoes_vantor','tcg_estoque_resumo_vantor'];
  const res=await Promise.all(names.map(n=>client.from(n).select('*').limit(5000)));
